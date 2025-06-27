@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gerador de Certificados e Carteiras</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+      background-color: #f5f5f5;
+    }
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    h1 {
+      text-align: center;
+      color: #333;
+    }
+    form {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+    }
+    label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+    }
+    input[type="text"],
+    input[type="date"] {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      box-sizing: border-box;
+    }
+    .checkbox-container {
+      grid-column: span 2;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
+    .checkbox-group {
+      background: #f9f9f9;
+      padding: 10px;
+      border-radius: 4px;
+    }
+    .checkbox-group label {
+      display: flex;
+      align-items: center;
+      margin-bottom: 8px;
+      font-weight: normal;
+    }
+    button {
+      grid-column: span 2;
+      background-color: #4CAF50;
+      color: white;
+      padding: 12px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+    button:hover {
+      background-color: #45a049;
+    }
+    .error {
+      color: red;
+      font-size: 0.9em;
+      margin-top: 5px;
+    }
+    .loading {
+      display: none;
+      text-align: center;
+      margin-top: 10px;
+      font-style: italic;
+      color: #666;
+    }
+  </style>
+  <!-- Importação das bibliotecas -->
+  <script src="https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@pdf-lib/fontkit@1.0.0/dist/fontkit.umd.min.js"></script>
+</head>
+<body>
+  <div class="container">
+    <h1>Gerador de Certificados e Carteiras</h1>
+    <form id="formulario">
+      <div>
+        <label for="nome">Nome:</label>
+        <input type="text" id="nome" required placeholder="Digite o nome completo" />
+      </div>
+      
+      <div>
+        <label for="cpf">CPF:</label>
+        <input type="text" id="cpf" required placeholder="Digite o CPF" />
+        <div id="cpf-error" class="error"></div>
+      </div>
+      
+      <div>
+        <label for="cidade">Cidade onde o curso foi realizado:</label>
+        <input type="text" id="cidade" required placeholder="Digite a cidade" />
+      </div>
+      
+      <div>
+        <label for="numeroCertificado">Número do Certificado (ex: 25/112097):</label>
+        <input type="text" id="numeroCertificado" required placeholder="Digite o número do certificado" />
+        <div id="numero-error" class="error"></div>
+      </div>
+      
+      <div>
+        <label for="dataConclusao">Data de Conclusão:</label>
+        <input type="date" id="dataConclusao" required />
+      </div>
+      
+      <div class="checkbox-container">
+        <div class="checkbox-group">
+          <label><input type="checkbox" name="curso" value="Escavadeira Hidráulica"> Escavadeira Hidráulica</label>
+          <label><input type="checkbox" name="curso" value="Pá Carregadeira"> Pá Carregadeira</label>
+          <label><input type="checkbox" name="curso" value="Trator Agrícola"> Trator Agrícola</label>
+          <label><input type="checkbox" name="curso" value="Rolo Compactador"> Rolo Compactador</label>
+        </div>
+        <div class="checkbox-group">
+          <label><input type="checkbox" name="curso" value="Retroescavadeira"> Retroescavadeira</label>
+          <label><input type="checkbox" name="curso" value="Empilhadeira"> Empilhadeira</label>
+          <label><input type="checkbox" name="curso" value="Motoniveladora"> Motoniveladora</label>
+          <label><input type="checkbox" name="curso" value="Mini Pá Carregadeira"> Mini Pá Carregadeira</label>
+        </div>
+        <div class="checkbox-group">
+          <label><input type="checkbox" name="curso" value="Trator de Esteira"> Trator de Esteira</label>
+          <label><input type="checkbox" name="curso" value="Guindauto - Munck"> Guindauto - Munck</label>
+          <label><input type="checkbox" name="curso" value="Caminhão Basculante"> Caminhão Basculante</label>
+        </div>
+      </div>
+
+      <button type="button" id="gerarDocumentos">Gerar Documentos</button>
+      <div id="loading" class="loading">Gerando documentos, por favor aguarde...</div>
+    </form>
+  </div>
+  <!-- Gerador em Massa -->
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Geração em Massa</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="container">
+    <h1>Geração em Massa</h1>
+
+    <form id="formularioEmMassa">
+      <div>
+        <label for="planilhaUrl">URL da Planilha Google:</label>
+        <input type="text" id="planilhaUrl" placeholder="Cole a URL da planilha aqui" required />
+      </div>
+
+      <button type="button" id="gerarEmMassa">Gerar Certificados e Carteiras em Massa</button>
+
+      <div id="loading" class="loading">
+        Gerando documentos, por favor aguarde...
+        <progress id="progressBar" value="0" max="100"></progress>
+      </div>
+
+      <div id="contadorCertificados">Certificados gerados: 0</div>
+      <div id="contadorCarteiras">Carteiras geradas: 0</div>
+    </form>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@pdf-lib/fontkit@1.0.0/dist/fontkit.umd.min.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
+<!-- inicio função letra -->
+ <div class="formatacao-container">
+  <textarea id="textoInput" rows="6" placeholder="Digite seu texto aqui..."></textarea>
+  
+  <div class="botoes-formatacao">
+    <button id="btnMaiusculo">MAIÚSCULO</button>
+    <button id="btnMinusculo">minúsculo</button>
+    <button id="btnAlternado">AlTeRnAdO</button>
+    <button id="btnInverter">Inverter Texto</button>
+    <button id="btnPrimeiraLetra">Primeira Letra Palavra</button>
+    <button id="btnPrimeiraFrase">Primeira palavra frase</button>
+    <button id="btnFormatarCPF">Formatar CPF</button>
+    <button id="btnSubstituirEspacos">Substituir espaços</button>
+    <button id="btnSelecionarTudo">Selecionar Tudo</button>
+  </div>
+</div>

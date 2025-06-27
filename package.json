@@ -1,0 +1,8 @@
+{
+  "devDependencies": {
+    "@parcel/resolver-default": "^2.15.2"
+  },
+  "dependencies": {
+    "pdf-lib": "^1.17.1"
+  }
+}
