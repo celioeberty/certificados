@@ -222,7 +222,8 @@ page.drawText(cpfFormatado, {
         });
 
         const pdfBytes = await pdfDoc.save();
-        const nomeArquivo = `Certificado_${dados.cursos[0].replace(/\s+/g, '_')}_${dados.nome.replace(/\s+/g, '_')}.pdf`;
+        const nomeArquivo = `Certificado ${dados.nome} ${dados.cursos[0]}.pdf`;
+
         await this.gerarPDF(pdfBytes, nomeArquivo);
         
         console.log('Certificado gerado com sucesso!');
@@ -289,13 +290,13 @@ page.drawText(cpfFormatado, {
 
 
 
-        page.drawText(dados.dataConclusao, {
-          x: positions.data.x,
-          y: positions.data.y,
-          size: configFonts.carteira.data.size,
-          font: fontData,
-          color: configFonts.carteira.data.color
-        });
+        page.drawText(formatarData(dados.dataConclusao), {  // ← Usa a função corrigida
+  x: positions.data.x,
+  y: positions.data.y,
+  size: configFonts.carteira.data.size,
+  font: fontData,
+  color: configFonts.carteira.data.color
+});
 
         // Preencher cursos
         let currentY = positions.cursos.startY;
@@ -311,7 +312,7 @@ page.drawText(cpfFormatado, {
         });
 
         const pdfBytes = await pdfDoc.save();
-        await this.gerarPDF(pdfBytes, `Carteira_${dados.nome.replace(/\s+/g, '_')}.pdf`);
+        await this.gerarPDF(pdfBytes, `Carteira ${dados.nome}.pdf`);
         console.log('Carteira gerada com sucesso!');
       } catch (error) {
         console.error('Erro ao gerar carteira:', error);
@@ -378,24 +379,34 @@ page.drawText(cpfFormatado, {
       alert('Ocorreu um erro ao gerar os documentos: ' + error.message);
     }
   });
-
   // Função auxiliar para formatar data
-  function formatarData(dataString) {
-    try {
-      const date = new Date(dataString);
-      if (isNaN(date.getTime())) {
-        throw new Error('Data inválida');
-      }
-      return date.toLocaleDateString('pt-BR', {
-        day: '2-digit',
-        month: '2-digit',
-        year: 'numeric'
-      });
-    } catch (error) {
-      console.error('Erro ao formatar data:', error);
-      return dataString;
+ function formatarData(dataString) {
+  try {
+    // Se vier no formato ISO (HTML: YYYY-MM-DD)
+    if (/^\d{4}-\d{2}-\d{2}$/.test(dataString)) {
+      const [ano, mes, dia] = dataString.split('-');
+      return `${dia}/${mes}/${ano}`;
     }
+
+    // Se vier no formato DD/MM/YYYY já formatado
+    if (/^\d{2}\/\d{2}\/\d{4}$/.test(dataString)) {
+      return dataString; // já está no formato correto
+    }
+
+    // Se vier no formato MM/DD/YYYY
+    if (/^\d{2}\/\d{2}\/\d{4}$/.test(dataString)) {
+      const [mes, dia, ano] = dataString.split('/');
+      return `${dia}/${mes}/${ano}`;
+    }
+
+    // Se nada der certo, retorna como veio
+    return dataString;
+
+  } catch (error) {
+    console.error('Erro ao formatar data:', error);
+    return dataString;
   }
+}
 });
 // inicio de gerador em massa 
 document.addEventListener('DOMContentLoaded', function() {
