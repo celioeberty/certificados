@@ -3,7 +3,15 @@ document.addEventListener('DOMContentLoaded', function() {
   function rgb(r, g, b) {
     return PDFLib.rgb(r / 255, g / 255, b / 255);
   }
-
+function incrementarNumeroCertificado(numeroCertificado) {
+  const partes = numeroCertificado.split('/');
+  if (partes.length !== 2 || isNaN(partes[1])) {
+    throw new Error("Formato inválido. Use 'XX/YYYYY' (ex: '25/115871').");
+  }
+  const prefixo = partes[0]; // "25"
+  const sufixo = parseInt(partes[1]); // 115871
+  return `${prefixo}/${sufixo + 1}`; // Retorna "25/115872"
+}
   // Configurações de fontes
   const configFonts = {
     certificado: {
@@ -169,13 +177,24 @@ document.addEventListener('DOMContentLoaded', function() {
           color: configFonts.certificado.nome.color
         });
 
-        page.drawText(dados.cpf, {
-          x: width / 2 - (fontCPF.widthOfTextAtSize(dados.cpf, configFonts.certificado.cpf.size) / 2),
-          y: positions.cpf.y,
-          size: configFonts.certificado.cpf.size,
-          font: fontCPF,
-          color: configFonts.certificado.cpf.color
-        });
+        // Formatar o CPF com pontuação
+// Remove qualquer caractere que não seja número
+const cpfLimpo = dados.cpf.replace(/[^\d]/g, '');
+
+// Verifica se o CPF tem 11 dígitos antes de formatar
+let cpfFormatado = 'CPF: inválido';
+if (cpfLimpo.length === 11) {
+  cpfFormatado = `CPF: ${cpfLimpo.substring(0, 3)}.${cpfLimpo.substring(3, 6)}.${cpfLimpo.substring(6, 9)}-${cpfLimpo.substring(9, 11)}`;
+}
+
+page.drawText(cpfFormatado, {
+  x: width / 2 - (fontCPF.widthOfTextAtSize(cpfFormatado, configFonts.certificado.cpf.size) / 2),
+  y: positions.cpf.y,
+  size: configFonts.certificado.cpf.size,
+  font: fontCPF,
+  color: configFonts.certificado.cpf.color
+});
+
 
         const textoCurso = `Capacitado para operador de ${dados.cursos[0]}`;
         page.drawText(textoCurso, {
@@ -253,13 +272,22 @@ document.addEventListener('DOMContentLoaded', function() {
           color: configFonts.carteira.nome.color
         });
 
-        page.drawText(dados.cpf.toUpperCase(), {
-          x: positions.cpf.x,
-          y: positions.cpf.y,
-          size: configFonts.carteira.cpf.size,
-          font: fontCPF,
-          color: configFonts.carteira.cpf.color
-        });
+        // Formata o CPF com os pontos e traço
+// Remove qualquer caractere que não seja número
+const cpfLimpo = dados.cpf.replace(/[^\d]/g, '');
+
+// Formata o CPF com pontuação padrão
+const cpfFormatado = `${cpfLimpo.substring(0, 3)}.${cpfLimpo.substring(3, 6)}.${cpfLimpo.substring(6, 9)}-${cpfLimpo.substring(9, 11)}`;
+
+page.drawText(cpfFormatado, {
+  x: positions.cpf.x,
+  y: positions.cpf.y,
+  size: configFonts.carteira.cpf.size,
+  font: fontCPF,
+  color: configFonts.carteira.cpf.color
+});
+
+
 
         page.drawText(dados.dataConclusao, {
           x: positions.data.x,
@@ -319,30 +347,27 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Formatar dados
-    const dados = {
-      nome,
-      cpf,
-      cidade,
-      cursos,
-      numeroCertificado,
-      dataConclusao: formatarData(dataConclusao)
-    };
+     let numeroAtual = numeroCertificado; // Agora é "let" para poder ser incrementado
 
-    // Gerar documentos
-    try {
-      console.log('Iniciando geração de documentos...');
-      
-      // Gerar certificado para cada curso selecionado
-      for (const curso of dados.cursos) {
-        const dadosCurso = {
-          ...dados,
-          cursos: [curso] // Envia apenas o curso atual
-        };
-        
-        await servicos.certificado(dadosCurso);
-        await new Promise(resolve => setTimeout(resolve, 500)); // Delay entre downloads
-      }
-      
+  const dados = {
+    nome,
+    cpf,
+    cidade,
+    cursos,
+    dataConclusao: formatarData(dataConclusao)
+  };
+
+  try {
+    // Gerar certificados com números sequenciais (LOOP MODIFICADO)
+    for (const curso of dados.cursos) {
+      await servicos.certificado({
+        ...dados,
+        cursos: [curso],
+        numeroCertificado: numeroAtual // Usa o número atual
+      });
+      numeroAtual = incrementarNumeroCertificado(numeroAtual); // Incrementa para o próximo
+      await new Promise(resolve => setTimeout(resolve, 500));
+    }
       // Gerar a carteira (uma única vez com todos os cursos)
       await servicos.carteira(dados);
       
