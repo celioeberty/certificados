@@ -555,7 +555,7 @@ document.addEventListener('DOMContentLoaded', function() {
       });
 
       // Texto do curso formatado
-      const textoCurso = `Capacitado para operador de ${dados.curso}`;
+      const textoCurso = `Capacitado para ${dados.curso}`;
       page.drawText(textoCurso, {
         x: width / 2 - (fontCurso.widthOfTextAtSize(textoCurso, 18) / 2),
         y: positions.curso.y,
@@ -830,3 +830,4 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // ... (o restante do seu código existente para geração de certificados)
 });
+
